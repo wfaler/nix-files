@@ -1,22 +1,16 @@
 { config, pkgs, ... }:
 
 let
-  background = pkgs.runCommand "simpleenergy_wallpaper" {
-    bg = ./simpleenergy_wallpaper_laptop_center_2.png;
-  } "cp $bg $out";
   hsPackages = with pkgs.haskellPackages; [
     cabal2nix
     cabalInstall
-    djinn
-    doctest
     ghc
     ghcCore
-    ghcid
     hlint
-    idris
+    happy
+    alex
+    ghcMod
     pandoc
-    pointfree
-    pointful
     purescript
     stylishHaskell
     taffybar
@@ -37,41 +31,30 @@ in
 
   boot.cleanTmpDir = true;
 
-  time.timeZone = "America/Denver";
+  time.timeZone = "Europe/London";
 
   fonts.enableCoreFonts = true;
 
   nix.binaryCaches = [ http://cache.nixos.org http://hydra.nixos.org ];
 
   environment.systemPackages = with pkgs; [
-    ack
     acpi
-    autojump
-    axel
     bind
     binutils
     chromium
+    firefox
     dmenu
     emacs
     evince
-    file
     gitFull
-    htop
     (haskellPackages.hoogleLocal.override {
       packages = hsPackages;
     })
     keepassx
-    mg
-    mplayer
-    nix-repl
+    vlc
     openconnect
     oraclejdk8
-    powertop
-    rxvt_unicode
     sbt
-    scrot
-    silver-searcher
-    terminator
     vagrant
     wpa_supplicant_gui
     xdg_utils
@@ -93,7 +76,6 @@ in
       lightdm.enable = true;
       sessionCommands = ''
         ${pkgs.xlibs.xsetroot}/bin/xsetroot -cursor_name left_ptr
-        ${pkgs.feh}/bin/feh --bg-fill ${background}
       '';
     };
     windowManager.default = "xmonad";
@@ -147,19 +129,19 @@ in
     };
   };
 
-  users.mutableUsers = true;
+#  users.mutableUsers = true;
 
-  users.extraUsers.brian = {
-    name = "brian";
+  users.extraUsers.wfaler = {
+    name = "wfaler";
     group = "users";
     uid = 1000;
     extraGroups = [ "wheel" ];
     createHome = true;
-    home = "/home/brian";
-    shell = "/run/current-system/sw/bin/zsh";
+    home = "/home/wfaler";
+    shell = "/run/current-system/sw/bin/bash";
   };
 
-  users.extraGroups.docker.members = [ "brian" ];
+#  users.extraGroups.docker.members = [ "wfaler" ];
 
   # Should I use this instead? Both are currently broken.
   # networking.networkmanager.enable = true;
@@ -170,7 +152,7 @@ in
   # networking.useDHCP = false;
   # networking.wicd.enable = true;
 
-  networking.hostName = "bmckenna-nixos";
+  networking.hostName = "wfaler-nixos";
   networking.wireless.enable = true;
   hardware.bluetooth.enable = true;
 
@@ -178,16 +160,9 @@ in
 
   services.nixosManual.showManual = true;
 
-  services.btsync.deviceName = "bmckenna-nixos";
-  services.btsync.enable = true;
-  services.btsync.enableWebUI = true;
-  services.btsync.httpListenAddr = "127.0.0.1";
-
   services.openssh.enable = true;
   programs.ssh.agentTimeout = "12h";
 
+#  virtualisation.docker.enable = true;
 
-  virtualisation.docker.enable = true;
-
-  programs.zsh.enable = true;
 }
