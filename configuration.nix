@@ -1,3 +1,7 @@
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+ #and in the NixOS manual (accessible by running ‘nixos-help’).
+
 { config, pkgs, ... }:
 
 let
@@ -24,11 +28,18 @@ in
       ./hardware-configuration.nix
     ];
 
+  # Use the gummiboot efi boot loader.
   boot.kernelPackages = pkgs.linuxPackages_3_17;
   boot.loader.gummiboot.enable = true;
   boot.loader.gummiboot.timeout = 5;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.initrd.luks.devices = [
+    { name = "root"; device = "/dev/sda4"; preLVM = true; }];
+
+  #  networking.hostName = "nixos"; # Define your hostname.
+#  networking.hostId = "d27401ca";
+  # networking.wireless.enable = true;  # Enables wireless.
   boot.cleanTmpDir = true;
 
   time.timeZone = "Europe/London";
@@ -37,30 +48,62 @@ in
 
   nix.binaryCaches = [ http://cache.nixos.org http://hydra.nixos.org ];
 
-  environment.systemPackages = with pkgs; [
-    acpi
-    bind
-    binutils
-    chromium
-    firefox
-    dmenu
-    emacs
-    evince
-    gitFull
-    (haskellPackages.hoogleLocal.override {
+  # Select internationalisation properties.
+  #  i18n = {
+  #    consoleFont = "lat9w-16";
+  #    consoleKeyMap = "us";
+  #    defaultLocale = "en_UK.UTF-8";
+   # };
+
+   # services.hardware.pommed.enable = true;
+  # List packages installed in system profile. To search by name, run:
+  # $ nix-env -qaP | grep wget
+   environment.systemPackages = with pkgs; [
+     terminator
+     tmux
+     s3cmd
+     wget
+     gnupg
+     emacs
+     gitFull
+     acpi
+     bind
+     binutils
+     chromium
+     firefoxWrapper
+     libreoffice
+     dmenu
+     emacs
+     ansible
+     cifs_utils
+     xfce.thunar
+     evince
+     pidgin
+     transmission
+     transmission_gtk
+     gitFull
+     (haskellPackages.hoogleLocal.override {
       packages = hsPackages;
-    })
-    keepassx
-    vlc
-    openconnect
-    oraclejdk8
-    sbt
-    vagrant
-    wpa_supplicant_gui
-    xdg_utils
-    xlibs.xev
-    xlibs.xset
+      })
+      keepassx
+      vlc
+      openconnect
+      jdk
+      sbt
+      nodejs
+      nodePackages.npm
+#      tigervnc
+      linuxPackages.virtualbox
+      vagrant
+      xdg_utils
+      xlibs.xev
+      xlibs.xset
+      thunderbird
+      xscreensaver
+      xlibs.xmodmap
+      gnome3.gnome-calculator
   ] ++ hsPackages;
+
 
   programs.light.enable = true;
 
@@ -106,26 +149,23 @@ in
       Option "DPI" "96 x 96"
       Option "NoLogo" "TRUE"
       Option "nvidiaXineramaInfoOrder" "DFP-2"
-      Option "metamodes" "HDMI-0: nvidia-auto-select +0+0, DP-2: nvidia-auto-select +1920+0 {viewportin=1680x1050}"
+ #     Option "metamodes" "HDMI-0: nvidia-auto-select +0+0, DP-2: nvidia-auto-select +1920+0 {viewportin=1680x1050}"
     '';
 
     xkbOptions = "terminate:ctrl_alt_bksp, ctrl:nocaps";
   };
 
+
   nixpkgs.config = {
     allowUnfree = true;
-    chromium.enablePepperFlash = true;
-    chromium.enablePepperPDF = true;
+    firefox = {
+     enableGoogleTalkPlugin = true;
+     enableAdobeFlash = true;
+    };
 
-    packageOverrides = pkgs: {
-      jre = pkgs.oraclejre8;
-      jdk = pkgs.oraclejdk8;
-      linux_3_17 = pkgs.linux_3_17.override {
-        extraConfig =
-        ''
-          THUNDERBOLT m
-        '';
-      };
+    chromium = {
+      enablePepperFlash = true;
+      enablePepperPDF = true;
     };
   };
 
@@ -135,34 +175,30 @@ in
     name = "wfaler";
     group = "users";
     uid = 1000;
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "vboxusers" ];
     createHome = true;
     home = "/home/wfaler";
     shell = "/run/current-system/sw/bin/bash";
   };
 
-#  users.extraGroups.docker.members = [ "wfaler" ];
-
-  # Should I use this instead? Both are currently broken.
-  # networking.networkmanager.enable = true;
-  # networking.connman.enable = true;
-
-  # Sadly wicd worked less than wpa_supplicant
-  # networking.interfaceMonitor.enable = false;
-  # networking.useDHCP = false;
-  # networking.wicd.enable = true;
-
+  users.extraGroups.docker.members = ["wfaler"];
+ # networking.firewall.allowedTCPPorts = [ 80 443 5900];
   networking.hostName = "wfaler-nixos";
   networking.wireless.enable = true;
   hardware.bluetooth.enable = true;
-
+  #services.hardware.pommed.enable = true;
   services.upower.enable = true;
 
   services.nixosManual.showManual = true;
-
+  services.virtualboxHost.enable = true;
   services.openssh.enable = true;
+  virtualisation.docker.enable =true;
+
   programs.ssh.agentTimeout = "12h";
 
-#  virtualisation.docker.enable = true;
+  # List services that you want to enable:
+
+  # Enable CUPS to print documents.
+  # services.printing.enable = true;
 
 }
