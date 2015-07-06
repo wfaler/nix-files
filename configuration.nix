@@ -1,27 +1,9 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
- #and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
 
-let
-  hsPackages = with pkgs.haskellPackages; [
-    cabal2nix
-    cabalInstall
-    ghc
-    ghcCore
-    hlint
-    happy
-    alex
-    ghcMod
-    pandoc
-    purescript
-    stylishHaskell
-    taffybar
-    xmobar
-    yeganesh
-  ];
-in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -29,83 +11,71 @@ in
     ];
 
   # Use the gummiboot efi boot loader.
-  boot.kernelPackages = pkgs.linuxPackages_3_17;
   boot.loader.gummiboot.enable = true;
   boot.loader.gummiboot.timeout = 5;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.initrd.luks.devices = [
-    { name = "root"; device = "/dev/sda4"; preLVM = true; }];
+  boot.initrd.luks.devices = [{name = "root"; device = "/dev/sda2"; preLVM = true;}];
 
-  #  networking.hostName = "nixos"; # Define your hostname.
-#  networking.hostId = "d27401ca";
-  # networking.wireless.enable = true;  # Enables wireless.
-  boot.cleanTmpDir = true;
-
-  time.timeZone = "Europe/London";
-
-  fonts.enableCoreFonts = true;
-
-  nix.binaryCaches = [ http://cache.nixos.org http://hydra.nixos.org ];
+  # networking.hostName = "nixos"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Select internationalisation properties.
-  #  i18n = {
-  #    consoleFont = "lat9w-16";
-  #    consoleKeyMap = "us";
-  #    defaultLocale = "en_UK.UTF-8";
-   # };
+  # i18n = {
+  #   consoleFont = "Lat2-Terminus16";
+  #   consoleKeyMap = "us";
+  #   defaultLocale = "en_US.UTF-8";
+  # };
 
-   # services.hardware.pommed.enable = true;
+  # Set your time zone.
+  # time.timeZone = "Europe/Amsterdam";
+
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
    environment.systemPackages = with pkgs; [
+     gitFull
+     wget
+     p7zip
+     emacs
      terminator
      tmux
-     s3cmd
-     wget
+     spotify
      gnupg
-     emacs
-     gitFull
      acpi
      bind
      binutils
-     chromium
      firefoxWrapper
-     libreoffice
      dmenu
-     emacs
-     ansible
      cifs_utils
-     xfce.thunar
-     evince
      pidgin
      transmission
      transmission_gtk
-     gitFull
-     (haskellPackages.hoogleLocal.override {
-      packages = hsPackages;
-      })
-      keepassx
-      vlc
-      openconnect
-      jdk
-      sbt
-      nodejs
-      nodePackages.npm
-#      tigervnc
-      linuxPackages.virtualbox
-      vagrant
-      xdg_utils
-      xlibs.xev
-      xlibs.xset
-      thunderbird
-      xscreensaver
-      xlibs.xmodmap
-      gnome3.gnome-calculator
-  ] ++ hsPackages;
+     keepassx
+     vlc
+     xdg_utils
+     xlibs.xev
+     xlibs.xset
+     thunderbird
+     xscreensaver
+     xlibs.xmodmap
+     gnome3.gnome-calculator
+     linuxPackages.virtualbox
+     vagrant
+     pkgs.haskellPackages.cabal2nix
+     pkgs.haskellPackages.xmobar
+     pkgs.haskellPackages.xmonad-contrib
+     pkgs.haskellPackages.xmonad-extras
+     ranger
+     vim
+     evince
+     chromium
+     libreoffice
+   ];
 
 
   programs.light.enable = true;
+
+
 
   services.xserver = {
     enable = true;
@@ -124,9 +94,9 @@ in
     windowManager.default = "xmonad";
     windowManager.xmonad.enable = true;
     windowManager.xmonad.enableContribAndExtras = true;
-    windowManager.xmonad.extraPackages = haskellPackages: [
-      haskellPackages.taffybar
-    ];
+#    windowManager.xmonad.extraPackages = haskellPackages: [
+#      haskellPackages.taffybar
+#    ];
 
     # TODO: Use the mtrack driver but do better than this.
     # multitouch.enable = true;
@@ -156,21 +126,6 @@ in
   };
 
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    firefox = {
-     enableGoogleTalkPlugin = true;
-     enableAdobeFlash = true;
-    };
-
-    chromium = {
-      enablePepperFlash = true;
-      enablePepperPDF = true;
-    };
-  };
-
-#  users.mutableUsers = true;
-
   users.extraUsers.wfaler = {
     name = "wfaler";
     group = "users";
@@ -181,8 +136,21 @@ in
     shell = "/run/current-system/sw/bin/bash";
   };
 
+
+  nixpkgs.config = {
+    allowUnfree = true;
+    firefox = {
+
+    };
+
+    chromium = {
+     enablePepperFlash = true; # Chromium's non-NSAPI alternative to Adobe Flash
+     enablePepperPDF = true;
+    };
+
+  };
   users.extraGroups.docker.members = ["wfaler"];
- # networking.firewall.allowedTCPPorts = [ 80 443 5900];
+  networking.firewall.allowedTCPPorts = [ 22 80 443 5900];
   networking.hostName = "wfaler-nixos";
   networking.wireless.enable = true;
   hardware.bluetooth.enable = true;
@@ -199,6 +167,6 @@ in
   # List services that you want to enable:
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
 
 }

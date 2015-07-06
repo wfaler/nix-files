@@ -8,13 +8,12 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_hcd" "ahci" "usbhid" "usb_storage" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" ];
   boot.kernelModules = [ "kvm-intel" "wl" "applesmc"];
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta
-  			       config.boot.kernelPackages.v4l2loopback];
+  boot.extraModulePackages = [ "${config.boot.kernelPackages.broadcom_sta}" ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/db50303f-cb50-4aac-bb45-122fc67dfc23";
+    { device = "/dev/disk/by-uuid/eaa9fb02-f452-4a8e-9371-8434a8bc67ea";
       fsType = "ext4";
     };
 
@@ -24,7 +23,7 @@
     };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/aafa4aa2-73bd-4ba4-b814-306f1ac6f676"; }
+    [ { device = "/dev/disk/by-uuid/d600af45-e7b1-430a-b7a4-2391f715dbd7"; }
     ];
 
   nix.maxJobs = 8;
