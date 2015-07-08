@@ -34,6 +34,11 @@
   # $ nix-env -qaP | grep wget
    environment.systemPackages = with pkgs; [
      gitFull
+     jdk
+     clementine
+     hexchat
+     darktable
+     unzip
      wget
      p7zip
      emacs
@@ -156,10 +161,18 @@
   hardware.bluetooth.enable = true;
   #services.hardware.pommed.enable = true;
   services.upower.enable = true;
-
+  services.nginx.enable = true;
+  services.nginx.user = "wfaler";
+  services.nginx.config = pkgs.lib.readFile /etc/nginx/nginx.conf;
   services.nixosManual.showManual = true;
   services.virtualboxHost.enable = true;
   services.openssh.enable = true;
+
+
+  services.postgresql.enable = true;
+  services.postgresql.package = pkgs.postgresql94;
+  services.postgresql.dataDir = "/data/postgresql";
+
   virtualisation.docker.enable =true;
 
   programs.ssh.agentTimeout = "12h";
