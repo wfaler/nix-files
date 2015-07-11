@@ -75,6 +75,8 @@
      evince
      chromium
      libreoffice
+     openvpn
+     nixops
    ];
 
 
@@ -151,6 +153,7 @@
     chromium = {
      enablePepperFlash = true; # Chromium's non-NSAPI alternative to Adobe Flash
      enablePepperPDF = true;
+     # enableWidevine = true;
     };
 
   };
