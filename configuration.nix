@@ -35,6 +35,7 @@
    environment.systemPackages = with pkgs; [
      gitFull
      jdk
+     nox
      clementine
      hexchat
      darktable
@@ -77,6 +78,8 @@
      libreoffice
      openvpn
      nixops
+     xclip
+     ansible
    ];
 
 
