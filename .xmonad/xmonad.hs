@@ -10,11 +10,13 @@ import XMonad.Prompt
 import XMonad.Prompt.Shell
 import XMonad.Prompt.XMonad
 import XMonad.Actions.Volume
+import XMonad.Layout.NoBorders
 
 main = xmonad =<< xmobar myConfig
  
 myConfig = ewmh defaultConfig
    { modMask = mod4Mask,
+     layoutHook = smartBorders  $  layoutHook defaultConfig,
      terminal = "terminator",
      keys = myKeys <+> keys defaultConfig 
    } 
