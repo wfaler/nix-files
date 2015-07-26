@@ -80,6 +80,7 @@
      nixops
      xclip
      ansible
+     file
    ];
 
 
@@ -174,6 +175,20 @@
   services.virtualboxHost.enable = true;
   services.openssh.enable = true;
 
+  powerManagement.enable = true;
+
+  systemd.services."my-pre-suspend" =
+  {   description = "Pre-Suspend Actions";
+      wantedBy = [ "suspend.target" ];
+      before = [ "systemd-suspend.service" ];
+      script = ''
+        /run/current-system/sw/bin/sync 
+	/run/current-system/sw/bin/xscreensaver-command -lock 2>/tmp/lock_err
+      '';
+
+      serviceConfig.Type = "simple";
+  };
+
 
   services.postgresql.enable = true;
   services.postgresql.package = pkgs.postgresql94;
@@ -186,6 +201,9 @@
   # List services that you want to enable:
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing = {
+      enable = true;
+      drivers = [ pkgs.gutenprint ];
+  };	      
 
 }

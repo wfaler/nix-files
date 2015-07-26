@@ -17,6 +17,7 @@ main = xmonad =<< xmobar myConfig
 myConfig = ewmh defaultConfig
    { modMask = mod4Mask,
      layoutHook = smartBorders  $  layoutHook defaultConfig,
+     startupHook = spawn "xscreensaver -no-splash &",
      terminal = "terminator",
      keys = myKeys <+> keys defaultConfig 
    } 
