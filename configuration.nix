@@ -81,6 +81,7 @@
      xclip
      ansible
      file
+     cpufrequtils
    ];
 
 
@@ -174,21 +175,7 @@
   services.nixosManual.showManual = true;
   services.virtualboxHost.enable = true;
   services.openssh.enable = true;
-
-  powerManagement.enable = true;
-
-  systemd.services."my-pre-suspend" =
-  {   description = "Pre-Suspend Actions";
-      wantedBy = [ "suspend.target" ];
-      before = [ "systemd-suspend.service" ];
-      script = ''
-        /run/current-system/sw/bin/sync 
-	/run/current-system/sw/bin/xscreensaver-command -lock 2>/tmp/lock_err
-      '';
-
-      serviceConfig.Type = "simple";
-  };
-
+  services.tlp.enable = true;
 
   services.postgresql.enable = true;
   services.postgresql.package = pkgs.postgresql94;
@@ -204,6 +191,21 @@
   services.printing = {
       enable = true;
       drivers = [ pkgs.hplipWithPlugin ];
-  };	      
+  };
+
+  systemd.services."my-pre-suspend" = 
+  {   description = "Pre-Suspend Actions";
+      wantedBy = [ "suspend.target" ];
+      before = [ "systemd-suspend.service" ];
+      script = ''
+	# sync filesystems if suspend fails
+	/run/current-system/sw/bin/sync 
+	# lock screen
+	/run/current-system/sw/bin/xscreensaver-command -lock 
+	sleep 3
+      '';
+
+      serviceConfig.Type = "simple";
+  };
 
 }
