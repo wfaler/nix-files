@@ -91,7 +91,7 @@
 
   services.xserver = {
     enable = true;
-
+    
     vaapiDrivers = [ pkgs.vaapiIntel ];
 
     desktopManager.default = "none";
@@ -147,7 +147,7 @@
     home = "/home/wfaler";
     shell = "/run/current-system/sw/bin/bash";
   };
-
+  security.sudo.enable = true;
 
   nixpkgs.config = {
     allowUnfree = true;
