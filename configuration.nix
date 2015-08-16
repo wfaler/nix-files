@@ -35,6 +35,7 @@
    environment.systemPackages = with pkgs; [
      gitFull
      jdk
+     sbt
      nox
      clementine
      hexchat
